@@ -20,6 +20,9 @@ import { motion } from "framer-motion"
 
 const Image = dynamic(() => import('next/image'), { ssr: false })
 const formSchema = z.object({
+  username: z.string().min(3, {
+    message: "Username must be at least 3 characters.",
+  }),
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
@@ -35,6 +38,7 @@ const AuthForm = ({type}) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      username: "",
       email: "",
       password: ""
     }
@@ -62,6 +66,22 @@ const router = useRouter() ;
         </h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
+
+          {type === 'signup' && (
+            <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your username" {...field} type="text" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          )}
           <FormField
             control={form.control}
             name="email"
@@ -106,5 +126,4 @@ const router = useRouter() ;
     </div>
   )
 }
-
 export default AuthForm
