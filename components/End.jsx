@@ -22,9 +22,6 @@ return (
                     <p>Diversify your Portfolio</p>
                 </div>
             </div>
-            <Link href="/signup" className='rounded-full bg-green-500 text-white font-monserrat text-lg sm:text-2xl font-normal px-6 py-3 mt-10 mb-5 transition duration-300 transform hover:scale-105 hover:shadow-lg'>
-                Get Started
-            </Link>
         </div>
     </section>
 )

@@ -2,84 +2,107 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import dynamic from 'next/dynamic'
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { motion } from "framer-motion"
 
 const Image = dynamic(() => import('next/image'), { ssr: false })
-const AuthForm = () => {
+const formSchema = z.object({
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
+})
+
+const AuthForm = ({type}) => {
   const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
   
-  const { register, handleSubmit } = useForm({
+  const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: ""
     }
   })
-
+const router = useRouter() ;
   const onSubmit = async (data) => {
     setIsLoading(true)
     try {
+      setIsSubmitted(true)
       // Your custom authentication logic here
       console.log('Form data:', data)
+      await new Promise(resolve => setTimeout(resolve, 1500)) // Simulate API call
     } catch (error) {
       console.error(error)
     } finally {
       setIsLoading(false)
     }
+    router.push("/")
   }
 
   return (
-    <div className="flex flex-col items-center space-y-6 w-full">
-      <div className="flex justify-center items-center mb-6">
-        <div className="relative w-[100px] h-[100px]">
-          <Image 
-            src="/logo.jpg" 
-            alt="logo" 
-            fill
-            sizes="100px"
-            priority
-            className="object-contain"
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col space-y-2 text-center">
+    <div className="flex  flex-col items-center space-y-6 w-full">
         <h1 className="text-2xl font-semibold tracking-tight">
-          Welcome back
+          Welcome back to <span className="font-monserrat text-blue-500 text-3xl font-bold cursor-pointer" onClick={() => router.push("/")}>TrackFolio</span>
         </h1>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input 
-            type="email" 
-            {...register("email")}
-            placeholder="Enter your email" 
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your email" {...field} type="email" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input 
-            type="password" 
-            {...register("password")}
-            placeholder="Enter your password"
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your password" {...field} type="password" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-black text-white rounded-lg py-2 px-4 hover:bg-gray-800 transition-colors"
-          disabled={isLoading}
-        >
-          {isLoading ? "Loading..." : "Sign In"}
-        </button>
-      </form>
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={isLoading}
+          >
+            {type === "signin" ? "Sign In" : "Sign Up"}
+          </Button>
+          <div className="flex justify-center items-center gap-2">
+            <p>{type === "signin" ? "Don't have an account?" : "Already have an account?"}</p>
+            <Link href={type === "signin" ? "/signup" : "/signin"} className="text-blue-500 ">
+              {type === "signin" ? "Sign Up" : "Sign In"}
+            </Link>
+          </div>
+        </form>
+      </Form>
     </div>
   )
 }
