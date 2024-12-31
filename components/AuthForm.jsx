@@ -1,126 +1,85 @@
 "use client"
-import { useState, useEffect } from 'react'
-import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { Button } from "./ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form"
-import { Input } from "./ui/input"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
+import dynamic from 'next/dynamic'
 
-const AuthForm = ({ type }) => {
-  const [mounted, setMounted] = useState(false)
+const Image = dynamic(() => import('next/image'), { ssr: false })
+const AuthForm = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
   
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  const form = useForm({
+  const { register, handleSubmit } = useForm({
     defaultValues: {
       email: "",
-      password: "",
-    },
+      password: ""
+    }
   })
 
-  // Don't render anything until mounted
-  if (!mounted) return null
-
-  const onSubmit = async (values) => {
+  const onSubmit = async (data) => {
     setIsLoading(true)
-    
-    if (type === 'signin') {
-      signIn('credentials', {
-        ...values,
-        redirect: false
-      })
-      .then((callback) => {
-        if (callback?.error) {
-          console.error('Invalid credentials');
-        }
-        if (callback?.ok && !callback?.error) {
-          router.push('/')
-        }
-      })
-      .finally(() => setIsLoading(false))
+    try {
+      // Your custom authentication logic here
+      console.log('Form data:', data)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
-    <div className='w-full min-h-screen p-4 flex flex-col justify-center items-center gap-8'>
-      <div className='w-full max-w-md'>
-        <h1 className='text-2xl font-bold text-center mb-8'>
-          {type === 'signin' ? 'Sign In' : 'Sign Up'}
-        </h1>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Enter your email" 
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="password"
-                      placeholder="Enter your password" 
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <Button 
-              type="submit" 
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Loading...' : type === 'signin' ? 'Sign In' : 'Sign Up'}
-            </Button>
-          </form>
-        </Form>
-
-        <p className='text-center mt-4'>
-          {type === 'signin' 
-            ? "Don't have an account? " 
-            : "Already have an account? "
-          }
-          <Link 
-            href={type === 'signin' ? '/signup' : '/signin'} 
-            className='text-blue-600'
-          >
-            {type === 'signin' ? 'Sign Up' : 'Sign In'}
-          </Link>
-        </p>
+    <div className="flex flex-col items-center space-y-6 w-full">
+      <div className="flex justify-center items-center mb-6">
+        <div className="relative w-[100px] h-[100px]">
+          <Image 
+            src="/logo.jpg" 
+            alt="logo" 
+            fill
+            sizes="100px"
+            priority
+            className="object-contain"
+          />
+        </div>
       </div>
+
+      <div className="flex flex-col space-y-2 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Welcome back
+        </h1>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <input 
+            type="email" 
+            {...register("email")}
+            placeholder="Enter your email" 
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <input 
+            type="password" 
+            {...register("password")}
+            placeholder="Enter your password"
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-black text-white rounded-lg py-2 px-4 hover:bg-gray-800 transition-colors"
+          disabled={isLoading}
+        >
+          {isLoading ? "Loading..." : "Sign In"}
+        </button>
+      </form>
     </div>
   )
 }

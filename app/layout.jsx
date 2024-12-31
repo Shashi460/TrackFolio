@@ -1,25 +1,16 @@
-import { Inter } from "next/font/google";
-import "../styles/globals.css";
-import { AuthProvider } from "../providers/auth-provider";
+import './globals.css'
 
-const inter = Inter({ 
-  subsets: ["latin"],
-  display: 'swap',
-});
+export const metadata = {
+  title: 'TrackFolio',
+  description: 'Track your portfolio with zero cost',
+}
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+      <body>
+        {children}
       </body>
     </html>
-  );
-}
-
-export const metadata = {
-  title: 'TrackFolio',
-  description: 'Track your portfolio',
+  )
 }

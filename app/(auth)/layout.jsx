@@ -1,17 +1,17 @@
-import { Inter, IBM_Plex_Serif,Montserrat } from "next/font/google";
-import "../../styles/globals.css";
+import { Inter } from 'next/font/google'
 
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
 
-
-
-export default function RootLayout({ children }) {
+export default function AuthLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        
-      >
+    <div className={`${inter.variable} min-h-screen bg-gray-100 flex items-center justify-center p-4`}>
+      <div className="w-full max-w-md">
         {children}
-      </body>
-    </html>
-  );
+      </div>
+    </div>
+  )
 }
