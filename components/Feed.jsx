@@ -29,7 +29,7 @@ const Feed = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-3xl sm:text-4xl lg:text-6xl font-bold tracking-tight text-gray-900 mb-4 sm:mb-6"
+                className="text-3xl  lg:text-6xl font-bold tracking-tight text-gray-900 mb-4 sm:mb-6"
               >
                 Track Your Portfolio
               </motion.h1>

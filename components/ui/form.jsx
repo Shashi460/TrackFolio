@@ -52,9 +52,9 @@ const FormControl = React.forwardRef(({ ...props }, ref) => {
 })
 FormControl.displayName = "FormControl"
 
-const FormMessage = React.forwardRef(({ className, children, ...props }, ref) => {
+const FormMessage = React.forwardRef(({ className, children, name, ...props }, ref) => {
   const { formState: { errors } } = useFormContext()
-  const body = errors?.[name]?.message || children
+  const body = name ? errors?.[name]?.message : children
 
   if (!body) {
     return null
