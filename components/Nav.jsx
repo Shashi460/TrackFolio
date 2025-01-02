@@ -2,10 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';  
 import Link from 'next/link';
-import { FaBars, FaTimes } from 'react-icons/fa';
-import { getServerSession } from 'next-auth'
 import Loginbutton from './Loginbutton'
-import { useSession } from 'next-auth/react'
 import { signOut } from 'next-auth/react'
 const Nav =  () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -60,7 +57,7 @@ const Nav =  () => {
       {menuOpen && (
         <div className='absolute top-0 right-0 h-auto w-2/5 max-w-xs bg-[#E39855] flex flex-col items-start py-6 shadow-lg rounded-bl-2xl mt-3 mr-6 rounded-2xl'>
           <div className='absolute top-3 right-3 ' onClick={toggleMenu}> 
-            <Loginbutton  />
+            <Loginbutton/>
          </div> 
           <Link href="/" className='py-4 pl-6 text-white hover:text-gray-200 transition-colors duration-200 w-full font-monserrat text-xl'>About</Link>
           <Link href="/portfolio" className='py-4 pl-6 text-white hover:text-gray-200 transition-colors duration-200 w-full font-monserrat  text-xl'>Portfolio</Link>

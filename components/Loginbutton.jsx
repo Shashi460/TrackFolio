@@ -10,8 +10,8 @@ const LoginButton = () => {
   return (
     <div className="flex items-center">
       {status === "authenticated" ? (
-          <div className="relative h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-r from-red-500 via-pink-500 to-red-500 rounded-full flex justify-center items-center hover:from-red-600 hover:via-pink-600 hover:to-red-600 transition-all duration-300">
-              <p className='text-3xl  mb-1 text-white font-montserrat'>{session?.user?.name[0]}</p>
+          <div className="relative h-10 w-10 sm:h-10 sm:w-10 bg-gradient-to-r from-red-500 via-pink-500 to-red-500 rounded-full flex justify-center items-center hover:from-red-600 hover:via-pink-600 hover:to-red-600 transition-all duration-300">
+              <p className='text-xl text-white font-montserrat'>{session?.user?.name[0]}</p> 
           </div>
       ) : (
         <Link 
