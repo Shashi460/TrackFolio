@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react'
 const Body = () => {
   const session = useSession() ;
   return (
-    <div className="min-h-screen w-full relative">
+    <div className="min-h-screen w-full relative mt-10">
       <div className="relative flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}

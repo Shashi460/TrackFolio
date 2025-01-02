@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
 import Link from "next/link"
 import {
@@ -56,37 +56,79 @@ const AuthForm = ({type}) => {
   })
 const router = useRouter() ;
 
-const onSubmit = async (data) => {
-  setIsLoading(true)
+const onSubmit = async (values) => {
+  setIsLoading(true);
   try {
-    setIsSubmitted(true)
-    
     if (type === "signin") {
-      const res = await signIn("credentials", {
+      const result = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
         redirect: false,
-        email: data.email,
-        password: data.password,
-      })
-      if (res.error) {
-        console.error("Sign in failed:", res.error)
-      } else {
-        router.push("/")
-      }
-    } 
-    console.log('Form data:', data)
-  } catch (error) {
-    console.error(error)
-  } finally {
-    setIsLoading(false)
-  }
-}
+        callbackUrl: "/"
+      });
 
+      if (result?.error) {
+        console.error("Authentication error:", result.error);
+        setError("root", { 
+          message: "Invalid credentials" 
+        });
+      } else {
+        router.push("/");
+        router.refresh();
+      }
+    } else if (type === "signup") {
+      try {
+        const response = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        });
+
+        if (response.ok) {
+          const result = await signIn("credentials", {
+            email: values.email,
+            password: values.password,
+            redirect: false,
+            callbackUrl: "/"
+          });
+
+          if (result?.error) {
+            throw new Error(result.error);
+          }
+
+          router.push("/");
+          router.refresh();
+        } else {
+          const data = await response.json();
+          throw new Error(data.message || "Something went wrong");
+        }
+      } catch (error) {
+        console.error("Signup error:", error);
+        setError("root", { 
+          message: error.message 
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Submission error:", error);
+    setError("root", { 
+      message: "An unexpected error occurred" 
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="flex  flex-col items-center space-y-6 w-full">
+        <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-semibold tracking-tight">
-          Welcome back to <Link href="/" className="font-monserrat text-blue-500 text-3xl font-bold cursor-pointer">TrackFolio</Link>
-        </h1>
+          Welcome back to <Link href="/" className="font-montserrat text-amber-500 hover:text-amber-600 text-3xl font-bold cursor-pointer bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 bg-clip-text text-transparent">TrackFolio</Link>
+        </h1> 
+        
+        </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
 
@@ -133,8 +175,9 @@ const onSubmit = async (data) => {
           />
           <Button 
             type="submit" 
-            className="w-full" 
+            className="w-full bg-black text-white" 
             disabled={isLoading}
+            
           >
             {type === "signin" ? "Sign In" : "Sign Up"}
           </Button>
@@ -148,9 +191,9 @@ const onSubmit = async (data) => {
       </div>
       <Button
               onClick={handleGoogleAuth}
-              className="w-full flex items-center justify-center gap-3 bg-white text-gray-900 hover:bg-gray-50 border border-gray-300 h-14 text-lg"
+              className="w-full flex items-center justify-center gap-3 text-white bg-black hover:bg-gray-800  border border-gray-300 h-14 text-lg"
             >
-              <svg className="w-6 h-6" viewBox="0 0 24 24">
+              <svg className="w-6 h-4" viewBox="0 0 24 24">
                 <path
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                   fill="#4285F4"
@@ -168,13 +211,14 @@ const onSubmit = async (data) => {
                   fill="#EA4335"
                 />
               </svg>
+              
               {type === "signin" ? "Sign in with Google" : "Sign up with Google"}
             </Button>
 
             <div className="flex justify-center items-center gap-2">
             <p>{type === "signin" ? "Don't have an account?" : "Already have an account?"}</p>
-            <Link href={type === "signin" ? "/signup" : "/signin"} className="text-blue-500 ">
-              {type === "signin" ? "Sign Up" : "Sign In"}
+            <Link href={type === 'signin' ? '/signup' : '/signin'} className="text-blue-600">
+              {type ==='signin' ? 'SignUp' : 'SignIn'}
             </Link>
           </div>
     </div>
